@@ -1,8 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:care_list/client/hive_names.dart';
+import 'package:care_list/constants.dart';
+import 'package:care_list/models/todo.dart';
 import 'package:care_list/widget/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -12,6 +16,8 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
+  TextEditingController title = TextEditingController();
+  TextEditingController description = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -61,11 +67,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           height: 6.h,
                         ),
                         TextFormField(
-                          // controller: text,
-                          // validator: (value) {
-                          //   if (text.text.isEmpty)
-                          //     return 'Please Input Some Text.';
-                          // },
+                          controller: title,
                           style: GoogleFonts.ubuntu(
                               color: Colors.black,
                               fontWeight: FontWeight.w300,
@@ -126,16 +128,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           height: 6.h,
                         ),
                         TextFormField(
-                          // controller: text,
-                          // validator: (value) {
-                          //   if (text.text.isEmpty)
-                          //     return 'Please Input Some Text.';
-                          // },
+                          controller: description,
                           style: GoogleFonts.ubuntu(
                               color: Colors.black,
                               fontWeight: FontWeight.w300,
                               fontSize: 16.sp),
-
                           keyboardType: TextInputType.text,
                           cursorColor: Colors.black,
                           maxLines: 10,
@@ -183,26 +180,47 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           height: 20.h,
                         ),
                         Center(
-                          child: Container(
-                            height: 40.h,
-                            width: 200.w,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(0xff613CF6),
-                                    Color(0xffF42A41).withOpacity(0.8)
-                                  ]),
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Center(
-                              child: AutoSizeText('Add Task',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.ubuntu(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 16.sp)),
+                          child: InkWell(
+                            onTap: () {
+                              if (title.text.isNotEmpty) {
+                                if (description.text.isNotEmpty) {
+                                  Box<Todo> contactsBox =
+                                      Hive.box<Todo>(HiveBoxes.todo);
+                                  contactsBox.add(Todo(
+                                      title: title.text,
+                                      description: description.text,
+                                      time: DateTime.now()));
+                                  showToast('Task Added Successfully!');
+                                  Navigator.of(context).pop(true);
+                                  setState(() {});
+                                } else {
+                                  showToast('Please Enter Your Description');
+                                }
+                              } else {
+                                showToast('Please Enter Your Title');
+                              }
+                            },
+                            child: Container(
+                              height: 40.h,
+                              width: 200.w,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Color(0xff613CF6),
+                                      Color(0xffF42A41).withOpacity(0.8)
+                                    ]),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Center(
+                                child: AutoSizeText('Add Task',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.ubuntu(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16.sp)),
+                              ),
                             ),
                           ),
                         ),

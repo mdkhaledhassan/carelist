@@ -1,5 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:care_list/constants.dart';
 import 'package:care_list/edit_task_screen.dart';
+import 'package:care_list/home_screen.dart';
 import 'package:care_list/widget/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,9 +9,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 
 class DetailsScreen extends StatefulWidget {
-  const DetailsScreen({super.key});
+  const DetailsScreen({super.key, this.res});
+  final res;
 
   @override
   State<DetailsScreen> createState() => _DetailsScreenState();
@@ -84,7 +88,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   bottom: 10,
                                   right: 10.w,
                                   left: 10.w),
-                              child: AutoSizeText('ajke amar mon valo nei ',
+                              child: AutoSizeText(
+                                  '${widget.res.title.toString()}',
                                   style: GoogleFonts.ubuntu(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w400,
@@ -117,7 +122,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   right: 10.w,
                                   left: 10.w),
                               child: AutoSizeText(
-                                  'ajke amar mon valo nei amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ajke amar mon valo nei ',
+                                  '${widget.res.description.toString()}',
                                   style: GoogleFonts.ubuntu(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w400,
@@ -147,7 +152,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       child: Padding(
                                         padding:
                                             MediaQuery.of(context).viewInsets,
-                                        child: EditTaskScreen(),
+                                        child: EditTaskScreen(res: widget.res),
                                       )));
                             },
                             child: PrimaryButton(text: 'Edit')),
@@ -229,7 +234,17 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                   ),
                                                   InkWell(
                                                     onTap: () {
-                                                      SystemNavigator.pop();
+                                                      widget.res.delete();
+                                                      showToast(
+                                                          'Task Deleted Successfully!');
+                                                      Navigator.push(
+                                                          context,
+                                                          PageTransition(
+                                                              child:
+                                                                  HomeScreen(),
+                                                              type:
+                                                                  PageTransitionType
+                                                                      .fade));
                                                     },
                                                     child: Container(
                                                       height: 30.h,

@@ -3,11 +3,18 @@ import 'package:care_list/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:page_transition/page_transition.dart';
 
-class Task extends StatelessWidget {
-  const Task({super.key});
+class Task extends StatefulWidget {
+  Task({super.key, this.res});
+  final res;
 
+  @override
+  State<Task> createState() => _TaskState();
+}
+
+class _TaskState extends State<Task> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -15,7 +22,8 @@ class Task extends StatelessWidget {
         Navigator.push(
             context,
             PageTransition(
-                child: DetailsScreen(), type: PageTransitionType.fade));
+                child: DetailsScreen(res: widget.res),
+                type: PageTransitionType.fade));
       },
       child: Container(
         height: 60.h,
@@ -40,15 +48,25 @@ class Task extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                        height: 18.sp,
-                        width: 18.sp,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(100.sp),
-                          border:
-                              Border.all(color: Color(0xff613CF6), width: 1.sp),
-                        )),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          widget.res.complete = !widget.res.complete!;
+                          widget.res.save();
+                        });
+                      },
+                      child: Container(
+                          height: 18.sp,
+                          width: 18.sp,
+                          decoration: BoxDecoration(
+                            color: widget.res.complete == true
+                                ? Color(0xff613CF6)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(100.sp),
+                            border: Border.all(
+                                color: Color(0xff613CF6), width: 1.sp),
+                          )),
+                    ),
                   ],
                 ),
               ),
@@ -63,7 +81,7 @@ class Task extends StatelessWidget {
                   children: [
                     RichText(
                       text: TextSpan(
-                        text: 'Ajke amar mon valo nei',
+                        text: '${widget.res.title.toString()}',
                         style: GoogleFonts.ubuntu(
                             color: Colors.black,
                             fontWeight: FontWeight.w400,
@@ -77,7 +95,8 @@ class Task extends StatelessWidget {
                       height: 3.h,
                     ),
                     FittedBox(
-                      child: AutoSizeText('10:30 AM • 31 May 2023',
+                      child: AutoSizeText(
+                          '${Jiffy(widget.res.time).format('h:mm a')} • ${Jiffy(widget.res.time).format('MMM yy')}',
                           textAlign: TextAlign.left,
                           style: GoogleFonts.ubuntu(
                               color: Color(0xffA4A4A4),

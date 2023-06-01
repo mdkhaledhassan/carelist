@@ -1,17 +1,32 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:care_list/constants.dart';
+import 'package:care_list/home_screen.dart';
 import 'package:care_list/widget/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 
 class EditTaskScreen extends StatefulWidget {
-  const EditTaskScreen({super.key});
+  const EditTaskScreen({super.key, this.res});
+  final res;
 
   @override
   State<EditTaskScreen> createState() => _EditTaskScreenState();
 }
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
+  TextEditingController title = TextEditingController();
+  TextEditingController description = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    title.text = widget.res.title;
+    description.text = widget.res.description;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -34,7 +49,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 Center(
                   child: FittedBox(
                     child: AutoSizeText('Edit Task',
-                        textAlign: TextAlign.left,
+                        textAlign: TextAlign.center,
                         style: GoogleFonts.ubuntu(
                             color: Color(0xff494949),
                             fontWeight: FontWeight.w700,
@@ -52,7 +67,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           height: 10.h,
                         ),
                         AutoSizeText('Task Title',
-                            textAlign: TextAlign.center,
+                            textAlign: TextAlign.left,
                             style: GoogleFonts.ubuntu(
                                 color: Color(0xff494949),
                                 fontWeight: FontWeight.w400,
@@ -61,11 +76,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           height: 6.h,
                         ),
                         TextFormField(
-                          // controller: text,
-                          // validator: (value) {
-                          //   if (text.text.isEmpty)
-                          //     return 'Please Input Some Text.';
-                          // },
+                          controller: title,
                           style: GoogleFonts.ubuntu(
                               color: Colors.black,
                               fontWeight: FontWeight.w300,
@@ -117,7 +128,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           height: 15.h,
                         ),
                         AutoSizeText('Task Description',
-                            textAlign: TextAlign.center,
+                            textAlign: TextAlign.left,
                             style: GoogleFonts.ubuntu(
                                 color: Color(0xff494949),
                                 fontWeight: FontWeight.w400,
@@ -126,16 +137,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           height: 6.h,
                         ),
                         TextFormField(
-                          // controller: text,
-                          // validator: (value) {
-                          //   if (text.text.isEmpty)
-                          //     return 'Please Input Some Text.';
-                          // },
+                          controller: description,
                           style: GoogleFonts.ubuntu(
                               color: Colors.black,
                               fontWeight: FontWeight.w300,
                               fontSize: 16.sp),
-
                           keyboardType: TextInputType.text,
                           cursorColor: Colors.black,
                           maxLines: 10,
@@ -183,26 +189,47 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           height: 20.h,
                         ),
                         Center(
-                          child: Container(
-                            height: 40.h,
-                            width: 200.w,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(0xff613CF6),
-                                    Color(0xffF42A41).withOpacity(0.8)
-                                  ]),
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Center(
-                              child: AutoSizeText('Update Task',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.ubuntu(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 16.sp)),
+                          child: InkWell(
+                            onTap: () {
+                              if (title.text.isNotEmpty) {
+                                if (description.text.isNotEmpty) {
+                                  widget.res.title = title.text;
+                                  widget.res.description = description.text;
+                                  widget.res.save();
+                                  showToast('Task Updated Successfully!');
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          child: HomeScreen(),
+                                          type: PageTransitionType.fade));
+                                } else {
+                                  showToast('Please Enter Your Description');
+                                }
+                              } else {
+                                showToast('Please Enter Your Title');
+                              }
+                            },
+                            child: Container(
+                              height: 40.h,
+                              width: 200.w,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Color(0xff613CF6),
+                                      Color(0xffF42A41).withOpacity(0.8)
+                                    ]),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Center(
+                                child: AutoSizeText('Update Task',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.ubuntu(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16.sp)),
+                              ),
                             ),
                           ),
                         ),
